@@ -1,6 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
-const ShortUrl = require('./models/shortUrl')
+const ShortUrl = require('./models/shortUrl.js')
 
 
 const app = express()
@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: false }))
 
 app.get('/', async(req, res) => {
     const shortUrls = await ShortUrl.find()
-    res.render('index', ())
+    res.render('index', { shortUrls: shortUrls })
 })
 
 app.post('/shortUrls', async(req, res) => {
@@ -26,4 +26,16 @@ app.post('/shortUrls', async(req, res) => {
     res.redirect('/')
 })
 
-app.listen(process.env.PORT || 5000);
+app.get('/:shoerUrl', async(req, res) => {
+    const shortUrl = await ShortUrl.findOne({ short: req.params.ShortUrl })
+
+    if (shortUrl == null) return res.sensdStatus(404)
+
+    shortUrl.clicks++
+        shortUrl.save()
+
+    res.redirect(shortUrl.full)
+
+})
+
+app.listen(process.env.PORT || 5500);
